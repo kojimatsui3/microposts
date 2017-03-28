@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
+  before_action :set_user, only: [:show, :edit, :update]
+  before_action :correct_user, only: [:edit, :update]
+
   def show # 追加
-   @user = User.find(params[:id])
   end
   
   def new
@@ -29,16 +31,19 @@ class UsersController < ApplicationController
       render 'new'
     end
   end
-  
- before_action :correct_user, only: [:edit, :update]
+
  
- def edit
+  def edit
+  end
  
- end
- 
- def update
- 
- end
+  def update
+    if @user.update(user_params)
+      flash[:success] = "Update Profile!"
+      redirect_to @user
+    else
+      render 'edit'
+    end
+  end
  
  
   private
@@ -47,8 +52,11 @@ class UsersController < ApplicationController
     params.require(:user).permit(:name, :email, :password, :password_confirmation, :profile, :region)
   end
   
-  def correct_user
+  def set_user
     @user = User.find(params[:id])
+  end
+  
+  def correct_user
     redirect_to root_path if @user != current_user
   end
 end
